@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/logo-travay-pei.png", "destination": "/logo-travay-pei.svg", "permanent": true }
+  ]
+}
