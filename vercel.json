@@ -1,5 +1,5 @@
 {
   "redirects": [
-    { "source": "/logo-travay-pei.png", "destination": "/logo-travay-pei.svg", "permanent": true }
+    { "source": "/logo-travay-pei.svg", "destination": "/logo-travay-pei.svg", "permanent": true }
   ]
 }

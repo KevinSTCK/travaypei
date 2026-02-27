@@ -14,15 +14,16 @@ function Header() {
     <header className="header">
       <div className="header__inner">
         <Link to="/" className="header__brand">
-          <img src="/logo-travay-pei.png" alt="Travay Péi" className="header__logo" />
-          <span className="header__name">Travay Péi</span>
+          <img src="/logo-travay-pei.svg" alt="Travay Péi" className="header__logo" />
         </Link>
 
         <nav className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}>
           <Link to="/offres" className="header__link">Offres d&apos;emploi</Link>
           <Link to="/entreprises" className="header__link">Entreprises</Link>
           <Link to="/actualites" className="header__link">Actualités</Link>
+          {/*
           <Link to="/cvtheque" className="header__link">CVthèque</Link>
+          */}
         </nav>
 
         <div className="header__actions">
