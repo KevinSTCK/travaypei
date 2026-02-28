@@ -1,3 +1,34 @@
+# Travay Péi – Emploi à La Réunion
+
+Plateforme d'offres d'emploi pour La Réunion.
+
+## Démarrage rapide
+
+```bash
+npm install
+cp .env.example .env   # puis renseigner les variables
+npm run dev
+```
+
+## Configuration Supabase
+
+Voir **[supabase/README.md](supabase/README.md)** pour :
+
+- Création du projet Supabase
+- Exécution des migrations SQL (tables `profiles`, `jobs`, `applications`)
+- Configuration Google OAuth
+
+### Variables d’environnement
+
+| Variable | Obligatoire | Description |
+|----------|-------------|-------------|
+| `VITE_SUPABASE_URL` | Oui (pour auth + offres) | URL du projet Supabase |
+| `VITE_SUPABASE_ANON_KEY` | Oui | Clé anon/public |
+
+Sans ces variables, l’app fonctionne en mode dégradé (données mock, auth désactivée).
+
+---
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

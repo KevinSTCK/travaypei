@@ -33,7 +33,6 @@ function AppRoutes() {
         }
       />
       <Route path="/entreprises" element={<PlaceholderPage title="Entreprises" />} />
-      <Route path="/actualites" element={<PlaceholderPage title="Actualités" />} />
       <Route path="/cvtheque" element={<PlaceholderPage title="CVthèque" />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

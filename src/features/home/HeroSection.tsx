@@ -2,7 +2,20 @@
  * Section hero de la page d'accueil : titre, sous-titre, barre de recherche.
  */
 
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 function HeroSection() {
+  const [query, setQuery] = useState('')
+  const navigate = useNavigate()
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const params = new URLSearchParams()
+    if (query.trim()) params.set('q', query.trim())
+    navigate(`/offres${params.toString() ? `?${params}` : ''}`)
+  }
+
   return (
     <section className="hero">
       <div className="hero__bg" />
@@ -11,13 +24,18 @@ function HeroSection() {
         <p className="hero__subtitle">
           Explorez des centaines d&apos;opportunités professionnelles 100% péi.
         </p>
-        <form className="hero__search" onSubmit={(e) => e.preventDefault()}>
+        <form className="hero__search" onSubmit={handleSubmit}>
           <div className="hero__search-input">
             <svg className="hero__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
             </svg>
-            <input type="text" placeholder="Quoi ? Métier, entreprise..." />
+            <input
+              type="text"
+              placeholder="Quoi ? Métier, entreprise..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
           </div>
           <div className="hero__search-input">
             <svg className="hero__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -14,6 +14,7 @@
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
   background:
     linear-gradient(
       180deg,
@@ -53,11 +54,14 @@ button {
 /* Header */
 .header {
   width: 100%;
-  background: #faf9f6;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(250, 249, 246, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 100;
+  padding-top: env(safe-area-inset-top, 0);
 }
 
 .header__inner {
@@ -65,6 +69,8 @@ button {
   width: 100%;
   max-width: 100%;
   padding: 1rem clamp(1.25rem, 4vw, 2.5rem);
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
   display: flex;
   align-items: center;
   gap: clamp(1rem, 2vw, 1.5rem);
@@ -90,11 +96,17 @@ button {
   letter-spacing: 0.02em;
 }
 
-.header__nav {
+.header__menu {
   display: flex;
   align-items: center;
   gap: 1.5rem;
   margin-left: auto;
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .header__link {
@@ -147,6 +159,7 @@ button {
   gap: 0.35rem;
   transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.08s,
     box-shadow 0.08s;
+  touch-action: manipulation; /* réduit le délai tactile */
 }
 
 .btn--primary {
@@ -484,6 +497,25 @@ button {
   border-radius: 999px;
   background: #d8f3dc;
   color: #1f4f3a;
+  cursor: pointer;
+}
+
+.filters__chips li.filters__chip--active {
+  background: #2d6a4f;
+  color: white;
+}
+
+.job-card-new-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.section-loading,
+.results__loading {
+  padding: 1.5rem;
+  text-align: center;
+  color: #6b7280;
 }
 
 .results {
@@ -499,6 +531,7 @@ button {
   align-items: center;
   gap: 1rem;
   margin-bottom: 0.9rem;
+  flex-wrap: wrap;
 }
 
 .results__count {
@@ -709,6 +742,58 @@ button {
   color: #b91c1c;
 }
 
+.auth__password-requirements {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.auth__password-requirement {
+  color: #9ca3af;
+}
+
+.auth__password-requirement--met {
+  color: #2d6a4f;
+}
+
+.auth__divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.auth__divider::before,
+.auth__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.auth__divider span {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.btn--google {
+  width: 100%;
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  color: #1d1d1d !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn--google:hover {
+  background: #f9fafb !important;
+  border-color: #d1d5db !important;
+}
+
 .auth__submit {
   margin-top: 0.5rem;
   width: 100%;
@@ -777,32 +862,76 @@ button {
 }
 
 @media (max-width: 900px) {
-  .header__nav {
-    display: none;
+  .header__logo {
+    width: 52px;
+    height: 52px;
   }
 
-  .header__nav--open {
-    display: flex;
+  .header__menu {
+    display: none;
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
     flex-direction: column;
     gap: 0;
-    padding: 1rem;
-    background: #faf9f6;
+    padding: 0;
+    margin: 0;
+    background: rgba(250, 249, 246, 0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid rgba(0, 0, 0, 0.06);
-    margin-left: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
   }
 
-  .header__nav--open .header__link {
-    padding: 0.75rem;
+  .header__menu--open {
+    display: flex;
+  }
+
+  .header__nav {
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+  }
+
+  .header__nav .header__link {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 1rem;
+    min-height: 48px;
+  }
+
+  .header__actions {
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem 1.25rem 1.25rem;
+    gap: 0.6rem;
+  }
+
+  .header__actions .btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0.75rem 1rem;
+  }
+
+  .header__actions .header__link {
+    padding: 0.75rem 1rem;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
   }
 
   .header__burger {
     display: flex;
     margin-left: auto;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 6px;
   }
 
   .job-grid {
@@ -825,31 +954,122 @@ button {
 
 @media (max-width: 700px) {
   .hero {
-    min-height: 340px;
-    padding: 1.5rem 1rem;
+    min-height: 320px;
+    padding: 2rem 1rem 1.5rem;
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .hero__title {
+    font-size: 1.5rem;
+    line-height: 1.25;
+    margin-bottom: 0.4rem;
+  }
+
+  .hero__subtitle {
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
   }
 
   .hero__search {
     flex-direction: column;
+    padding: 0.75rem;
+    gap: 0.5rem;
   }
 
   .hero__search-input {
     min-width: 100%;
+    padding: 0.85rem 1rem;
+    min-height: 48px;
+  }
+
+  .hero__search-input input {
+    font-size: 16px; /* évite le zoom iOS */
   }
 
   .hero__search-btn {
     width: 100%;
+    min-height: 48px;
+    padding: 0.85rem 1.25rem;
   }
 
   .job-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .content {
-    padding: 1.5rem 1.25rem 2.5rem;
+    padding: 1.5rem 1rem 2.5rem;
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .section-title {
+    font-size: 1.25rem;
   }
 
   .dashboard__grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .header__logo {
+    width: 44px;
+    height: 44px;
+  }
+
+  .hero {
+    min-height: 280px;
+    padding: 1.5rem 0.875rem;
+  }
+
+  .hero__title {
+    font-size: 1.35rem;
+  }
+
+  .hero__subtitle {
+    font-size: 0.9rem;
+  }
+
+  .content {
+    padding: 1.25rem 0.875rem 2rem;
+  }
+
+  .job-grid {
+    gap: 0.875rem;
+  }
+
+  .job-card-new {
+    padding: 1rem;
+  }
+
+  .job-site__footer {
+    padding: 1.5rem 1rem 1.25rem;
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .job-site__footer-links {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .layout {
+    gap: 1rem;
+  }
+
+  .filters,
+  .results {
+    padding: 1rem;
+  }
+
+  .auth__card {
+    margin: 0 0.5rem;
+    padding: 1.25rem 1rem;
+  }
+
+  .job-card {
+    padding: 0.875rem 1rem;
   }
 }

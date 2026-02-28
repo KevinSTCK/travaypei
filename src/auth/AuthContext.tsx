@@ -12,6 +12,8 @@ import { supabase } from '../lib/supabaseClient'
 
 type Role = 'candidate' | 'company' | null
 
+const OAUTH_ROLE_KEY = 'travaypei_oauth_role'
+
 type AuthContextValue = {
   user: User | null
   role: Role
@@ -24,6 +26,7 @@ type AuthContextValue = {
     fullName?: string
     companyName?: string
   }) => Promise<void>
+  signInWithGoogle: (role: 'candidate' | 'company') => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -43,9 +46,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } = await supabase.auth.getSession()
       if (!isMounted) return
 
+      let userRole: Role = (session?.user?.user_metadata?.role as Role | undefined) ?? null
+
+      // Si l'utilisateur vient de Google OAuth et n'a pas encore de rôle
+      if (session?.user && !userRole) {
+        const oauthRole = sessionStorage.getItem(OAUTH_ROLE_KEY) as Role | null
+        if (oauthRole === 'candidate' || oauthRole === 'company') {
+          try {
+            await supabase.auth.updateUser({
+              data: { ...session.user.user_metadata, role: oauthRole },
+            })
+            userRole = oauthRole
+          } finally {
+            sessionStorage.removeItem(OAUTH_ROLE_KEY)
+          }
+        }
+      }
+
       setUser(session?.user ?? null)
-      const metadataRole = (session?.user?.user_metadata?.role as Role | undefined) ?? null
-      setRole(metadataRole ?? null)
+      setRole(userRole)
       setLoading(false)
     }
 
@@ -53,10 +72,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      let userRole: Role = (session?.user?.user_metadata?.role as Role | undefined) ?? null
+
+      if (session?.user && !userRole && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+        const oauthRole = sessionStorage.getItem(OAUTH_ROLE_KEY) as Role | null
+        if (oauthRole === 'candidate' || oauthRole === 'company') {
+          try {
+            await supabase.auth.updateUser({
+              data: { ...session.user.user_metadata, role: oauthRole },
+            })
+            userRole = oauthRole
+          } finally {
+            sessionStorage.removeItem(OAUTH_ROLE_KEY)
+          }
+        }
+      }
+
       setUser(session?.user ?? null)
-      const metadataRole = (session?.user?.user_metadata?.role as Role | undefined) ?? null
-      setRole(metadataRole ?? null)
+      setRole(userRole)
       setLoading(false)
     })
 
@@ -117,6 +151,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   )
 
+  const signInWithGoogle = useCallback(
+    async (oauthRole: 'candidate' | 'company') => {
+      sessionStorage.setItem(OAUTH_ROLE_KEY, oauthRole)
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/connexion`,
+        },
+      })
+      if (error) {
+        sessionStorage.removeItem(OAUTH_ROLE_KEY)
+        throw error
+      }
+    },
+    [],
+  )
+
   const signOut = useCallback(async () => {
     setLoading(true)
     await supabase.auth.signOut()
@@ -132,9 +183,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       signIn,
       signUp,
+      signInWithGoogle,
       signOut,
     }),
-    [user, role, loading, signIn, signUp, signOut],
+    [user, role, loading, signIn, signUp, signInWithGoogle, signOut],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
